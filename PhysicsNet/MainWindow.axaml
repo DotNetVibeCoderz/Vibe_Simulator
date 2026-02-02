@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="using:PhysicsNet.UI"
+        x:Class="PhysicsNet.MainWindow"
+        Title="PhysicsNet - Rigid Body Engine by Jacky"
+        Width="1000" Height="700"
+        WindowStartupLocation="CenterScreen"
+        KeyDown="OnKeyDown" KeyUp="OnKeyUp">
+    
+    <Grid ColumnDefinitions="200, *">
+        <!-- Sidebar Menu -->
+        <Border Grid.Column="0" Background="#202020" Padding="10">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Select Scenario:" Foreground="White" FontWeight="Bold"/>
+                
+                <!-- FIX: Replaced ComboBox with Buttons -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Name="ScenarioButtons" Spacing="5">
+                        <!-- Buttons will be added dynamically or hardcoded, doing dynamic in code behind is cleaner but XAML is fine too -->
+                        <Button Name="BtnScenario0" Content="Pyramid Stack" HorizontalAlignment="Stretch" Click="OnScenarioButtonClick" Tag="0"/>
+                        <Button Name="BtnScenario1" Content="Wrecking Ball" HorizontalAlignment="Stretch" Click="OnScenarioButtonClick" Tag="1"/>
+                        <Button Name="BtnScenario2" Content="Platformer Game" HorizontalAlignment="Stretch" Click="OnScenarioButtonClick" Tag="2"/>
+                        <Button Name="BtnScenario3" Content="Soft Body Blob" HorizontalAlignment="Stretch" Click="OnScenarioButtonClick" Tag="3"/>
+                        <Button Name="BtnScenario4" Content="Newton's Cradle" HorizontalAlignment="Stretch" Click="OnScenarioButtonClick" Tag="4"/>
+                        <Button Name="BtnScenario5" Content="Zero Gravity" HorizontalAlignment="Stretch" Click="OnScenarioButtonClick" Tag="5"/>
+                    </StackPanel>
+                </ScrollViewer>
+                
+                <TextBlock Text="Instructions:" Foreground="White" FontWeight="Bold" Margin="0,20,0,0"/>
+                <TextBlock Name="InstructionText" Text="Select a scenario to start." 
+                           Foreground="LightGray" TextWrapping="Wrap" FontSize="12"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Simulation View -->
+        <ui:SimulationControl Grid.Column="1" Name="SimControl" />
+    </Grid>
+</Window>
