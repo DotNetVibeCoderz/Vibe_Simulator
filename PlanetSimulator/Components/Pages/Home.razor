@@ -1,0 +1,236 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JSRuntime
+@rendermode RenderMode.InteractiveServer
+
+<PageTitle>Solar System Simulator</PageTitle>
+
+<div style="position: relative; width: 100%; height: 90vh; overflow: hidden; background-color: #000;">
+    <!-- 3D Canvas Container -->
+    <div id="three-canvas" style="width: 100%; height: 100%;"></div>
+
+    <!-- Info Panel Overlay -->
+    @if (SelectedObject != null)
+    {
+        <div class="info-panel animate-fade-in">
+            <div class="panel-header">
+                <h3>@SelectedObject.Name</h3>
+                <button class="close-btn" @onclick="CloseInfo">×</button>
+            </div>
+            <div class="panel-content">
+                <span class="badge">@SelectedObject.Type</span>
+                <p>@SelectedObject.Description</p>
+            </div>
+        </div>
+    }
+
+    <!-- Speed Control -->
+    <div class="speed-control">
+        <label>Speed</label>
+        <input type="range" min="0" max="1" step="0.05" @bind="SimulationSpeed" @bind:event="oninput" @onchange="UpdateSpeed" />
+    </div>
+
+    <!-- Camera Controls -->
+    <div class="camera-controls">
+        <button class="ctrl-btn" @onclick="RotateLeft" title="Rotate Left">↺</button>
+        <button class="ctrl-btn" @onclick="ZoomIn" title="Zoom In">+</button>
+        <button class="ctrl-btn" @onclick="ZoomOut" title="Zoom Out">-</button>
+        <button class="ctrl-btn" @onclick="RotateRight" title="Rotate Right">↻</button>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+        <p>Use Mouse to Rotate/Zoom. Click planets for details.</p>
+    </div>
+</div>
+
+<style>
+    .info-panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 300px;
+        background: rgba(10, 20, 40, 0.85);
+        border: 1px solid #48f;
+        border-radius: 10px;
+        color: white;
+        backdrop-filter: blur(10px);
+        font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 0 15px rgba(34, 136, 255, 0.3);
+        overflow: hidden;
+        z-index: 10;
+    }
+
+    .panel-header {
+        background: rgba(34, 136, 255, 0.2);
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #48f;
+    }
+
+    .panel-header h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #fff;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .panel-content {
+        padding: 20px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        background: #48f;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+    }
+
+    .speed-control {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.6);
+        padding: 10px 20px;
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 5;
+    }
+
+    .speed-control input {
+        width: 200px;
+        accent-color: #48f;
+    }
+
+    .camera-controls {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 5;
+    }
+
+    .ctrl-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(34, 136, 255, 0.3);
+        border: 1px solid #48f;
+        color: white;
+        font-size: 1.2rem;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+        background: rgba(34, 136, 255, 0.6);
+        transform: scale(1.1);
+    }
+
+    .ctrl-btn:active {
+        transform: scale(0.95);
+    }
+
+    .instructions {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+        pointer-events: none;
+        user-select: none;
+    }
+
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+@code {
+    private CelestialBodyInfo? SelectedObject { get; set; }
+    private double SimulationSpeed { get; set; } = 0.2;
+    private DotNetObjectReference<Home>? _objRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _objRef = DotNetObjectReference.Create(this);
+            await Task.Delay(100);
+            await JSRuntime.InvokeVoidAsync("planetSimulator.init", "three-canvas", _objRef);
+        }
+    }
+
+    [JSInvokable]
+    public void SetSelectedObject(CelestialBodyInfo info)
+    {
+        SelectedObject = info;
+        StateHasChanged();
+    }
+
+    private void CloseInfo()
+    {
+        SelectedObject = null;
+    }
+
+    private async Task UpdateSpeed()
+    {
+        await JSRuntime.InvokeVoidAsync("planetSimulator.setSpeed", SimulationSpeed);
+    }
+
+    private async Task ZoomIn()
+    {
+        await JSRuntime.InvokeVoidAsync("planetSimulator.zoomIn");
+    }
+
+    private async Task ZoomOut()
+    {
+        await JSRuntime.InvokeVoidAsync("planetSimulator.zoomOut");
+    }
+
+    private async Task RotateLeft()
+    {
+        await JSRuntime.InvokeVoidAsync("planetSimulator.rotateLeft");
+    }
+
+    private async Task RotateRight()
+    {
+        await JSRuntime.InvokeVoidAsync("planetSimulator.rotateRight");
+    }
+
+    public void Dispose()
+    {
+        _objRef?.Dispose();
+    }
+
+    public class CelestialBodyInfo
+    {
+        public string Name { get; set; } = "";
+        public string Type { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+}
