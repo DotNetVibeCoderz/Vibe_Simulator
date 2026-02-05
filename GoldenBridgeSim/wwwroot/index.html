@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GoldenBridgeSim</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="GoldenBridgeSim.styles.css" rel="stylesheet" />
+    
+    <!-- Three.js CDN -->
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <svg class="loading-progress">
+            <circle r="40%" cx="50%" cy="50%" />
+            <circle r="40%" cx="50%" cy="50%" />
+        </svg>
+        <div class="loading-progress-text">Loading Traffic Sim...</div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+    
+    <!-- Custom Engine -->
+    <script type="module">
+        import { initSim, updateSpeed, setTimeOfDay, setWeather, spawnVehicle } from './js/sim_engine.js';
+        
+        // Expose to window for Blazor JSInterop
+        window.TrafficSim = {
+            init: (canvasId) => initSim(canvasId),
+            setSpeed: (val) => updateSpeed(val),
+            setTime: (val) => setTimeOfDay(val),
+            setWeather: (type) => setWeather(type),
+            spawnCar: () => spawnVehicle()
+        };
+    </script>
+</body>
+
+</html>
