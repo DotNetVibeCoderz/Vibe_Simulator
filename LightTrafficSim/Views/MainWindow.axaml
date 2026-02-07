@@ -1,0 +1,118 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LightTrafficSim.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="using:LightTrafficSim.Models"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="LightTrafficSim.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon=""
+        Title="LightTrafficSim - Jacky The Code Bender">
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*,Auto">
+        
+        <!-- Simulation Area -->
+        <!-- Use a Grid as container to layer Background and Cars properly -->
+        <Grid Grid.Row="0" Background="#333333" ClipToBounds="True">
+            
+            <!-- Layer 1: Road Markings -->
+            <Canvas>
+                <!-- Road Surface (Top 100 to 300) -->
+                <Rectangle Canvas.Top="100" Width="2000" Height="200" Fill="#404040"/>
+                
+                <!-- Lane Divider (Dashed Line) -->
+                <Line StartPoint="0,200" EndPoint="2000,200" Stroke="White" StrokeThickness="2" StrokeDashArray="4,4"/>
+                
+                <!-- Stop Line -->
+                <Rectangle Canvas.Left="600" Canvas.Top="100" Width="10" Height="200" Fill="White"/>
+
+                <!-- Traffic Light Pole -->
+                <Rectangle Canvas.Left="600" Canvas.Top="20" Width="5" Height="80" Fill="Gray"/>
+                
+                <!-- Traffic Light Box -->
+                <Border Canvas.Left="585" Canvas.Top="20" Width="35" Height="90" Background="Black" CornerRadius="5" BorderBrush="Gray" BorderThickness="2">
+                    <StackPanel Spacing="5" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <!-- Red Light -->
+                        <Ellipse Width="20" Height="20" Fill="Red" Opacity="{Binding RedLightOpacity}"/>
+                        <!-- Yellow Light -->
+                        <Ellipse Width="20" Height="20" Fill="Yellow" Opacity="{Binding YellowLightOpacity}"/>
+                        <!-- Green Light -->
+                        <Ellipse Width="20" Height="20" Fill="Lime" Opacity="{Binding GreenLightOpacity}"/>
+                    </StackPanel>
+                </Border>
+            </Canvas>
+
+            <!-- Layer 2: Cars -->
+            <!-- ItemsControl over the entire area -->
+            <ItemsControl ItemsSource="{Binding Cars}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                
+                <ItemsControl.Styles>
+                    <!-- Bind Canvas.Left/Top on the ContentPresenter -->
+                    <Style Selector="ContentPresenter" x:DataType="models:Car">
+                        <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                        <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                    </Style>
+                </ItemsControl.Styles>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="40" Height="20" Background="{Binding Color}" CornerRadius="3" BorderBrush="White" BorderThickness="1">
+                            <Panel>
+                                <!-- Headlights -->
+                                <Rectangle Width="4" Height="4" Fill="Yellow" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,2,2,0"/>
+                                <Rectangle Width="4" Height="4" Fill="Yellow" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,2,2"/>
+                                <!-- Taillights -->
+                                <Rectangle Width="4" Height="4" Fill="Red" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,2,0,0"/>
+                                <Rectangle Width="4" Height="4" Fill="Red" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2,0,0,2"/>
+                            </Panel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            
+            <!-- Debug Info Overlay -->
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
+                <TextBlock Text="{Binding CarCount, StringFormat='Active Cars: {0}'}" Foreground="White"/>
+                <TextBlock Text="Flow: Left -> Right" Foreground="Gray" FontSize="10"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Controls Panel -->
+        <Border Grid.Row="1" Background="#202020" Padding="20">
+            <StackPanel Spacing="10">
+                <TextBlock Text="Simulation Parameters" FontWeight="Bold" Foreground="White" FontSize="16"/>
+                
+                <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto,Auto,Auto">
+                    
+                    <!-- Spawn Rate -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Spawn Rate (Cars/sec):" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Slider Grid.Row="0" Grid.Column="1" Minimum="0.1" Maximum="5.0" Value="{Binding SpawnRate}" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="{Binding SpawnRate, StringFormat={}{0:F1}}" Foreground="White" VerticalAlignment="Center" Width="30"/>
+
+                    <!-- Green Duration -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Green Light Duration (s):" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Slider Grid.Row="1" Grid.Column="1" Minimum="1.0" Maximum="10.0" Value="{Binding GreenDuration}" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding GreenDuration, StringFormat={}{0:F1}}" Foreground="White" VerticalAlignment="Center" Width="30"/>
+
+                    <!-- Red Duration -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Red Light Duration (s):" Foreground="White" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Slider Grid.Row="2" Grid.Column="1" Minimum="1.0" Maximum="10.0" Value="{Binding RedDuration}" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding RedDuration, StringFormat={}{0:F1}}" Foreground="White" VerticalAlignment="Center" Width="30"/>
+                    
+                    <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Text="Info: Traffic flows Left to Right. Stop line at 600px." Foreground="Gray" Margin="0,10,0,0" FontStyle="Italic"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Window>
