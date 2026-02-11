@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:GBPlayer.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="GBPlayer.Views.MainWindow"
+        Icon=""
+        Title="GBPlayer">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Load ROM..." Command="{Binding LoadRomCommand}"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Emulation">
+                <MenuItem Header="_Reset" Command="{Binding ResetCommand}"/>
+                <MenuItem Header="_Pause/Resume" Command="{Binding TogglePauseCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Settings">
+                <MenuItem Header="_Configure..." Command="{Binding OpenSettingsCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Command="{Binding ShowAboutCommand}"/>
+            </MenuItem>
+        </Menu>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Background="#F0F0F0" Height="25">
+            <TextBlock Text="{Binding StatusText}" Margin="5,0,0,0" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Border Background="Black" Padding="10">
+            <Image Source="{Binding ScreenBuffer}" Stretch="Uniform" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+        </Border>
+    </DockPanel>
+</Window>

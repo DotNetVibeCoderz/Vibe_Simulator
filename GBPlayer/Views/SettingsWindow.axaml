@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:GBPlayer.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="420" d:DesignHeight="640"
+        x:Class="GBPlayer.Views.SettingsWindow"
+        Title="Settings"
+        Width="420" Height="640"
+        WindowStartupLocation="CenterOwner"
+        Background="#0F172A">
+
+    <Design.DataContext>
+        <vm:SettingsViewModel/>
+    </Design.DataContext>
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="18">
+            <TextBlock Text="Settings" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center" Foreground="White"/>
+            <TextBlock Text="Sesuaikan kecepatan emulasi dan key binding favorit kamu." FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+
+            <!-- FPS Control -->
+            <Border Background="#111827" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="16">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="Emulation Speed" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock Text="Target FPS" FontSize="12" Foreground="#94A3B8"/>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Slider Grid.Column="0" Minimum="30" Maximum="144" Value="{Binding TargetFps}" 
+                                TickFrequency="5" IsSnapToTickEnabled="True" Margin="0,0,12,0"/>
+                        <Border Grid.Column="1" Background="#1F2937" CornerRadius="6" Padding="8,4">
+                            <TextBlock Text="{Binding TargetFps, StringFormat='{}{0} FPS'}" Foreground="White"/>
+                        </Border>
+                    </Grid>
+                    <TextBlock Text="Default 60 FPS. Naikkan untuk mempercepat permainan." FontSize="11" Foreground="#94A3B8"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Key Bindings -->
+            <Border Background="#111827" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="12" Padding="16">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Key Bindings" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock Text="Pilih tombol keyboard untuk setiap fungsi." FontSize="12" Foreground="#94A3B8"/>
+
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnDefinitions="*, Auto" RowSpacing="10" ColumnSpacing="12">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Up" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding UpKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Down" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding DownKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Left" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding LeftKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Right" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding RightKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="A" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding AKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="B" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding BKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="Select" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="6" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding SelectKey}" Width="160"/>
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="Start" Foreground="White" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="7" Grid.Column="1" ItemsSource="{Binding AvailableKeys}" SelectedItem="{Binding StartKey}" Width="160"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
+                <Button Content="Cancel" Command="{Binding CancelCommand}" Background="#1F2937" Foreground="White"/>
+                <Button Content="Save" Command="{Binding SaveCommand}" Classes="accent"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>
