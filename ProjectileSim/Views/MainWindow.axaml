@@ -1,0 +1,116 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ProjectileSim.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+        x:Class="ProjectileSim.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="ProjectileSim - Physics Simulator"
+        Background="#1e1e1e"
+        TransparencyLevelHint="AcrylicBlur"
+        ExtendClientAreaToDecorationsHint="True">
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="300, *" RowDefinitions="30, *">
+        <!-- Title Bar Area -->
+        <TextBlock Grid.Column="0" Grid.ColumnSpan="2" Text="ProjectileSim" VerticalAlignment="Center" Margin="10,0" FontWeight="Bold" Foreground="White"/>
+
+        <!-- Sidebar Controls -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Background="#252526">
+            <StackPanel Spacing="15" Margin="15">
+                <TextBlock Text="Launch Parameters" FontWeight="Bold" FontSize="16" Foreground="#ddd"/>
+                
+                <StackPanel>
+                    <TextBlock Text="{Binding InitialVelocity, StringFormat='Velocity: {0:F1} m/s'}" Foreground="#aaa"/>
+                    <Slider Minimum="0" Maximum="200" Value="{Binding InitialVelocity}"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="{Binding LaunchAngle, StringFormat='Angle: {0:F1}°'}" Foreground="#aaa"/>
+                    <Slider Minimum="0" Maximum="90" Value="{Binding LaunchAngle}"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="{Binding InitialHeight, StringFormat='Height: {0:F1} m'}" Foreground="#aaa"/>
+                    <Slider Minimum="0" Maximum="100" Value="{Binding InitialHeight}"/>
+                </StackPanel>
+
+                <Separator Background="#444"/>
+
+                <TextBlock Text="Environment" FontWeight="Bold" FontSize="16" Foreground="#ddd"/>
+
+                <StackPanel>
+                    <TextBlock Text="{Binding Mass, StringFormat='Mass: {0:F1} kg'}" Foreground="#aaa"/>
+                    <Slider Minimum="0.1" Maximum="50" Value="{Binding Mass}"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Text="{Binding Gravity, StringFormat='Gravity: {0:F2} m/s²'}" Foreground="#aaa"/>
+                    <Slider Minimum="1" Maximum="20" Value="{Binding Gravity}"/>
+                </StackPanel>
+
+                <CheckBox Content="Enable Air Resistance" IsChecked="{Binding EnableDrag}" Foreground="#ddd"/>
+
+                <StackPanel IsVisible="{Binding EnableDrag}">
+                    <TextBlock Text="{Binding DragCoefficient, StringFormat='Drag Coeff: {0:F2}'}" Foreground="#aaa"/>
+                    <Slider Minimum="0" Maximum="2" Value="{Binding DragCoefficient}"/>
+                </StackPanel>
+
+                <Separator Background="#444"/>
+
+                <StackPanel Spacing="10" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding StartCommand}" Content="Start" Background="#2ecc71" Foreground="White"/>
+                    <Button Command="{Binding PauseCommand}" Content="Pause" Background="#f1c40f" Foreground="Black"/>
+                    <Button Command="{Binding ResetCommand}" Content="Reset" Background="#e74c3c" Foreground="White"/>
+                </StackPanel>
+
+                <Expander Header="Statistics" IsExpanded="True" Background="#333" Foreground="#ddd">
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="{Binding FlightTime, StringFormat='Time: {0:F2} s'}" Foreground="#ccc"/>
+                        <TextBlock Text="{Binding Range, StringFormat='Range: {0:F2} m'}" Foreground="#ccc"/>
+                        <TextBlock Text="{Binding MaxHeight, StringFormat='Max Height: {0:F2} m'}" Foreground="#ccc"/>
+                        <Separator Background="#555"/>
+                        <TextBlock Text="{Binding KineticEnergy, StringFormat='KE: {0:F0} J'}" Foreground="#ccc"/>
+                        <TextBlock Text="{Binding PotentialEnergy, StringFormat='PE: {0:F0} J'}" Foreground="#ccc"/>
+                    </StackPanel>
+                </Expander>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Simulation Area -->
+        <Border Grid.Row="1" Grid.Column="1" Background="#87CEEB" Margin="10" CornerRadius="10" ClipToBounds="True">
+            <Grid>
+                <!-- Ground -->
+                <Rectangle Fill="#2ecc71" Height="20" VerticalAlignment="Bottom"/>
+                
+                <!-- Grid Lines (Optional) -->
+                
+                <!-- Canvas for drawing -->
+                <Canvas x:Name="SimCanvas" Background="Transparent" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                     <!-- Projectile -->
+                    <Ellipse Width="20" Height="20" Fill="Red" x:Name="ProjectileShape">
+                        <Ellipse.RenderTransform>
+                            <TranslateTransform X="0" Y="0"/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                    
+                    <!-- Trajectory -->
+                    <Polyline Stroke="Blue" StrokeThickness="2" x:Name="TrajectoryLine"/>
+                </Canvas>
+
+                <!-- Overlay Info -->
+                <Border Background="#80000000" CornerRadius="5" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="10" Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="{Binding CurrentSpeed, StringFormat='Speed: {0:F1} m/s'}" Foreground="White"/>
+                        <TextBlock Text="{Binding CurrentPositionY, StringFormat='Alt: {0:F1} m'}" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
