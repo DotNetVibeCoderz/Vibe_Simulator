@@ -1,0 +1,34 @@
+@page "/options"
+@using CitySimulator.Data
+@inject CityEngine Engine
+
+<PageTitle>CitySimulator - Options</PageTitle>
+
+<div class="container mt-4">
+    <h2>Simulator Options</h2>
+    <hr />
+
+    <div class="card p-3 mb-3">
+        <h4>Weather Override</h4>
+        <p>Change the weather manually. Note that the simulation engine has a 1% chance every tick to change it randomly.</p>
+        
+        <div class="btn-group" role="group">
+            <button class="btn btn-outline-primary" @onclick='() => SetWeather("Clear")'>☀️ Clear</button>
+            <button class="btn btn-outline-secondary" @onclick='() => SetWeather("Rain")'>🌧️ Rain</button>
+            <button class="btn btn-outline-dark" @onclick='() => SetWeather("Fog")'>🌫️ Fog</button>
+        </div>
+    </div>
+    
+    <div class="alert alert-warning mt-3">
+        Current Weather: <strong>@Engine.Weather</strong>
+    </div>
+
+    <a href="simulator" class="btn btn-success mt-3">Back to Simulator</a>
+</div>
+
+@code {
+    private void SetWeather(string w)
+    {
+        Engine.ChangeWeather(w);
+    }
+}

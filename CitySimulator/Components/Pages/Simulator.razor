@@ -1,0 +1,129 @@
+@page "/simulator"
+@rendermode InteractiveServer
+@using CitySimulator.Data
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+@inject CityEngine Engine
+
+<PageTitle>CitySimulator - View</PageTitle>
+
+<div style="position: relative; width: 100vw; height: 100vh; overflow: hidden;">
+    
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container" style="width: 100%; height: 100%;"></div>
+
+    <!-- HUD Overlay -->
+    <div class="hud" style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 15px; border-radius: 8px; font-family: sans-serif; pointer-events: none; user-select: none;">
+        <h3 style="margin-top: 0; border-bottom: 1px solid #555; padding-bottom: 5px;">MetroStats</h3>
+        <p style="margin: 5px 0;"><strong>Population:</strong> @Engine.Population</p>
+        <p style="margin: 5px 0;"><strong>Funds:</strong> $@Engine.Funds</p>
+        <p style="margin: 5px 0;"><strong>Happiness:</strong> @Engine.Happiness%</p>
+        <p style="margin: 5px 0;"><strong>Time:</strong> @FormatTime(Engine.TimeOfDay)</p>
+        <p style="margin: 5px 0;"><strong>Weather:</strong> @Engine.Weather</p>
+    </div>
+
+    <!-- Floating Actions & Controls -->
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 10;">
+        <a href="/" class="btn btn-danger btn-sm" style="text-decoration: none; color: white; background: #dc3545; padding: 8px 15px; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-weight: bold;">Exit Sim</a>
+        
+        <!-- Controls Panel -->
+        <div class="controls-panel" style="background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px; font-family: sans-serif; width: 250px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            <h4 style="margin-top: 0; border-bottom: 1px solid #555; padding-bottom: 5px; font-size: 1.1rem;">Controls</h4>
+            
+            <div class="mb-3">
+                <label class="form-label" style="font-size: 0.9rem;">Force Weather</label>
+                <select class="form-select form-select-sm" value="@Engine.Weather" @onchange="OnWeatherChanged">
+                    <option value="Clear">☀️ Clear</option>
+                    <option value="Rain">🌧️ Rain</option>
+                    <option value="Fog">🌫️ Fog</option>
+                </select>
+                <small style="font-size: 0.7rem; color: #ccc;">Note: AI might override this later</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" style="font-size: 0.9rem;">Set Time of Day</label>
+                <input type="range" class="form-range" min="0" max="23.5" step="0.5" value="@Engine.TimeOfDay" @onchange="OnTimeChanged" />
+            </div>
+
+            <div class="mb-1 mt-2">
+                <button class="btn btn-success btn-sm w-100" @onclick="GrantFunds" style="font-weight: bold;">💰 Inject $50,000</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@code {
+    private bool _isDisposed = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("citySim.init", "canvas-container");
+            
+            // Subscribe to engine state
+            Engine.OnStateChanged += UpdateState;
+        }
+    }
+
+    private async void UpdateState()
+    {
+        if (_isDisposed) return;
+
+        // Must update via InvokeAsync for UI Thread synchronization
+        await InvokeAsync(async () =>
+        {
+            if (_isDisposed) return;
+            StateHasChanged();
+            
+            // Sync specific state with JS (TimeOfDay and Weather)
+            try {
+                await JS.InvokeVoidAsync("citySim.updateTime", Engine.TimeOfDay);
+                await JS.InvokeVoidAsync("citySim.setWeather", Engine.Weather);
+            } catch { /* Suppress errors if JS is disconnected */ }
+        });
+    }
+
+    // --- Control Events ---
+
+    private void OnWeatherChanged(ChangeEventArgs e)
+    {
+        if (e.Value is string weather)
+        {
+            Engine.ChangeWeather(weather);
+        }
+    }
+
+    private void OnTimeChanged(ChangeEventArgs e)
+    {
+        if (double.TryParse(e.Value?.ToString(), out double time))
+        {
+            Engine.SetTimeOfDay(time);
+        }
+    }
+
+    private void GrantFunds()
+    {
+        Engine.AddFunds(50000);
+    }
+
+    private string FormatTime(double timeInHours)
+    {
+        int h = (int)timeInHours;
+        int m = (int)((timeInHours - h) * 60);
+        return $"{h:D2}:{m:D2}";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _isDisposed = true;
+        Engine.OnStateChanged -= UpdateState;
+        
+        try
+        {
+            await JS.InvokeVoidAsync("citySim.dispose");
+        }
+        catch { /* Circuit might be closed */ }
+    }
+}
