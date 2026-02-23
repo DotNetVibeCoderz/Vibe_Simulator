@@ -1,0 +1,155 @@
+:root {
+    --bg-color: #f4f4f4;
+    --text-color: #000;
+    --accent-red: #ff3b30;
+    --accent-blue: #007aff;
+    --accent-yellow: #ffcc00;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    text-transform: uppercase;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Arial Black', sans-serif;
+    letter-spacing: -2px;
+    margin: 0;
+}
+
+.brutal-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.brutal-card {
+    border: 4px solid var(--text-color);
+    background-color: #fff;
+    padding: 1rem;
+    box-shadow: 10px 10px 0px var(--text-color);
+    margin-bottom: 2rem;
+    transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.brutal-card:hover {
+    transform: translate(-5px, -5px);
+    box-shadow: 15px 15px 0px var(--text-color);
+}
+
+.brutal-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    border: 4px solid var(--text-color);
+    background-color: var(--accent-yellow);
+    color: var(--text-color);
+    font-weight: bold;
+    font-size: 1.2rem;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 5px 5px 0px var(--text-color);
+    transition: background-color 0.2s, transform 0.1s, box-shadow 0.1s;
+}
+
+.brutal-btn:hover {
+    background-color: var(--accent-red);
+    color: #fff;
+    transform: translate(-2px, -2px);
+    box-shadow: 7px 7px 0px var(--text-color);
+}
+
+.brutal-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0px var(--text-color);
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.nav-bar {
+    border-bottom: 6px solid var(--text-color);
+    background-color: var(--accent-blue);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-bar h1 {
+    color: #fff;
+    text-shadow: 2px 2px 0px var(--text-color);
+    font-size: 2rem;
+    margin: 0;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.nav-links a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px solid #fff;
+    padding: 0.5rem 1rem;
+    background: var(--text-color);
+    box-shadow: 3px 3px 0px #fff;
+}
+
+.nav-links a:hover {
+    background: var(--accent-yellow);
+    color: var(--text-color);
+    box-shadow: 3px 3px 0px var(--text-color);
+    border-color: var(--text-color);
+}
+
+/* Simulator HUD */
+#hud {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    color: #0f0;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 0 #000;
+    pointer-events: none;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border: 2px solid #0f0;
+}
+
+#instructions {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1rem;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border: 2px solid #0f0;
+    z-index: 100;
+}
+
+#instructions .controls-text {
+    pointer-events: none;
+}
+
+#instructions .button-group {
+    pointer-events: auto; /* Memastikan tombol di dalam blok ini bisa diklik */
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}

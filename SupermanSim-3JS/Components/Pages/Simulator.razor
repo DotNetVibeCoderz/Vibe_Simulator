@@ -1,0 +1,62 @@
+@page "/simulator/{Mode}"
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<PageTitle>Flight Simulator - @Mode</PageTitle>
+
+<div id="sim-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+<div id="hud">
+    SPEED: <span id="hud-speed">0 KM/H</span><br/>
+    ALT: <span id="hud-alt">0 M</span>
+</div>
+
+<div id="instructions">
+    CONTROLS:<br />
+    W/S: Accelerate/Decelerate<br />
+    A/D: Yaw Left/Right<br />
+    Q/E: Roll Left/Right<br />
+    Shift: Turbo Boost<br />
+    Space: Pitch Up<br />
+    <br/>
+    <button class="brutal-btn" style="padding: 0.5rem; font-size: 0.8rem;" @onclick="EnableAudio">ENABLE AUDIO (CLICK HERE)</button>
+    <button class="brutal-btn" style="padding: 0.5rem; font-size: 0.8rem; background-color: var(--accent-red);" @onclick="ExitSim">EXIT</button>
+</div>
+
+@code {
+    [Parameter]
+    public string Mode { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initSimulator", Mode);
+        }
+    }
+
+    private async Task EnableAudio()
+    {
+        await JSRuntime.InvokeVoidAsync("startAudio");
+    }
+
+    private async Task ExitSim()
+    {
+        await JSRuntime.InvokeVoidAsync("disposeSimulator");
+        NavigationManager.NavigateTo("/");
+    }
+
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("disposeSimulator");
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore
+        }
+    }
+}

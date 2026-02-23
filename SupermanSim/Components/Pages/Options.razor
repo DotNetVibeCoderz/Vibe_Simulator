@@ -1,0 +1,33 @@
+@page "/options"
+
+<PageTitle>Options - Superman Simulator</PageTitle>
+
+<div class="brutal-container">
+    <div class="brutal-card">
+        <h2>SIMULATION SETTINGS</h2>
+        <p>Tweak your flight experience.</p>
+        
+        <div class="menu-grid">
+            <div class="brutal-card">
+                <h3>GRAPHICS</h3>
+                <label><input type="checkbox" checked> ENABLE FOG</label><br/>
+                <label><input type="checkbox" checked> RENDER BUILDINGS</label><br/>
+                <label><input type="checkbox" checked> SHOW CLOUDS</label>
+            </div>
+            
+            <div class="brutal-card">
+                <h3>AUDIO</h3>
+                <label><input type="range" min="0" max="100" value="80"> MASTER VOLUME</label><br/>
+                <label><input type="range" min="0" max="100" value="100"> WIND NOISE</label>
+            </div>
+            
+            <div class="brutal-card">
+                <h3>GAMEPLAY</h3>
+                <label><input type="checkbox" checked> SUPER SPEED (SHIFT)</label><br/>
+                <label><input type="checkbox"> INVERT PITCH (SPACE)</label>
+            </div>
+        </div>
+        
+        <button class="brutal-btn" style="background-color: var(--accent-blue); color: white;">SAVE SETTINGS</button>
+    </div>
+</div>

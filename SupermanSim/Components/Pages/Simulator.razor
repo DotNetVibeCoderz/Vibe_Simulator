@@ -1,0 +1,80 @@
+@page "/simulator/{Mode}"
+@inject IJSRuntime JSRuntime
+@inject IConfiguration Configuration
+@implements IAsyncDisposable
+
+<PageTitle>Flight Simulator - @Mode</PageTitle>
+
+<div id="sim-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+<div id="hud">
+    SPEED: <span id="hud-speed">0 KM/H</span><br/>
+    ALT: <span id="hud-alt">0 M</span>
+</div>
+
+<div id="instructions">
+    <div class="controls-text">
+        CONTROLS:<br />
+        W/S: Accelerate/Decelerate<br />
+        A/D: Yaw Left/Right<br />
+        Q/E: Roll Left/Right<br />
+        Arrow Up: Pitch Up<br />
+        Arrow Down: Pitch Down<br />
+        Shift: Turbo Boost<br />
+    </div>
+    
+    <div class="button-group">
+        <button class="brutal-btn" style="padding: 0.5rem; font-size: 0.8rem;" @onclick="EnableAudio">ENABLE AUDIO</button>
+        <button class="brutal-btn" style="padding: 0.5rem; font-size: 0.8rem; background-color: var(--accent-red);" @onclick="ExitSim">EXIT</button>
+    </div>
+</div>
+
+<!-- Info API Key (hanya untuk pengembang/pengguna awal) -->
+@if (string.IsNullOrEmpty(Configuration["GoogleMaps:ApiKey"]))
+{
+    <div style="position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.8); color: yellow; padding: 10px; font-family: 'Courier New'; max-width: 300px; z-index: 99; border: 2px solid yellow; pointer-events: none;">
+        <b>PENTING:</b> Secara default simulasi berjalan dengan OSM 3D Buildings. Untuk Google Maps 3D Tiles fotorealistik, tambahkan <b>API Key Google Cloud</b> Anda di file <code>appsettings.json</code> pada bagian <code>GoogleMaps:ApiKey</code>!
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Mode { get; set; } = "";
+
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // Ambil API Key dari appsettings.json
+            string apiKey = Configuration["GoogleMaps:ApiKey"] ?? "";
+            
+            // Kirim API Key ke fungsi JavaScript sebagai parameter
+            await JSRuntime.InvokeVoidAsync("initSimulator", Mode, apiKey);
+        }
+    }
+
+    private async Task EnableAudio()
+    {
+        await JSRuntime.InvokeVoidAsync("startAudio");
+    }
+
+    private async Task ExitSim()
+    {
+        await JSRuntime.InvokeVoidAsync("disposeSimulator");
+        NavigationManager.NavigateTo("/");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("disposeSimulator");
+        }
+        catch (JSDisconnectedException)
+        {
+            // Ignore if disconnected
+        }
+    }
+}

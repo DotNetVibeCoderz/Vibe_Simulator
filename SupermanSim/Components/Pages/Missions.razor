@@ -1,0 +1,39 @@
+@page "/missions"
+
+<PageTitle>Missions - Superman Simulator</PageTitle>
+
+<div class="brutal-container">
+    <div class="brutal-card">
+        <h2>ACTIVE MISSIONS</h2>
+        <p>Your help is needed across the globe.</p>
+        
+        <div class="menu-grid">
+            <div class="brutal-card">
+                <h3>EARTHQUAKE IN TOKYO</h3>
+                <p>Severity: HIGH<br>Time Limit: 2 Mins</p>
+                <button class="brutal-btn" style="background-color: var(--accent-red); color: white;" @onclick='() => StartMission("tokyo")'>ACCEPT</button>
+            </div>
+            
+            <div class="brutal-card">
+                <h3>TSUNAMI WARNING</h3>
+                <p>Severity: CRITICAL<br>Location: Pacific Ocean</p>
+                <button class="brutal-btn" style="background-color: var(--accent-red); color: white;" @onclick='() => StartMission("pacific")'>ACCEPT</button>
+            </div>
+            
+            <div class="brutal-card">
+                <h3>EIFFEL TOWER PHOTO OP</h3>
+                <p>Severity: LOW<br>Reporter Lois Lane needs a picture.</p>
+                <button class="brutal-btn" style="background-color: var(--accent-blue); color: white;" @onclick='() => StartMission("paris")'>ACCEPT</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    private void StartMission(string location)
+    {
+        NavigationManager.NavigateTo($"/simulator/{location}_mission");
+    }
+}

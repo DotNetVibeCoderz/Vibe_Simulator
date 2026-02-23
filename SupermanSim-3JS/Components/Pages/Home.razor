@@ -1,0 +1,44 @@
+@page "/"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Superman Simulator - Main Menu</PageTitle>
+
+<div class="brutal-container">
+    <div class="brutal-card">
+        <h2>SELECT FLIGHT MODE</h2>
+        <p>Prepare to unleash your powers.</p>
+        
+        <div class="menu-grid">
+            <div class="brutal-card">
+                <h3>GLOBAL 3D MAP</h3>
+                <p>Free flight around the world. No limits.</p>
+                <button class="brutal-btn" @onclick='() => StartSimulation("global")'>FLY NOW</button>
+            </div>
+
+            <div class="brutal-card">
+                <h3>CITY TOUR</h3>
+                <p>Glide above massive concrete jungles.</p>
+                <button class="brutal-btn" @onclick='() => StartSimulation("city_tour")'>EXPLORE CITY</button>
+            </div>
+
+            <div class="brutal-card">
+                <h3>SUPERSONIC CHALLENGE</h3>
+                <p>Test your maximum speed in a straight run.</p>
+                <button class="brutal-btn" @onclick='() => StartSimulation("supersonic")'>MACH 10</button>
+            </div>
+            
+            <div class="brutal-card">
+                <h3>RESCUE MISSIONS</h3>
+                <p>Respond to emergencies marked on the map.</p>
+                <button class="brutal-btn" @onclick='() => NavigationManager.NavigateTo("/missions")'>VIEW MISSIONS</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private void StartSimulation(string mode)
+    {
+        NavigationManager.NavigateTo($"/simulator/{mode}");
+    }
+}

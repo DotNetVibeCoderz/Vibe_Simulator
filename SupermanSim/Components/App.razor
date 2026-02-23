@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Superman Simulator</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/brutalist.css" />
+    <!-- Menambahkan CesiumJS untuk Google Maps 3D Tiles -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cesium/1.114.0/Widgets/widgets.min.css" rel="stylesheet">
+    <HeadOutlet @rendermode="InteractiveServer" />
+</head>
+
+<body>
+    <Routes @rendermode="InteractiveServer" />
+    
+    <!-- Mengganti Three.js dengan CesiumJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cesium/1.114.0/Cesium.js"></script>
+    <script src="js/superman.js"></script>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html>
